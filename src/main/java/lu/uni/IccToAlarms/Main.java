@@ -38,10 +38,10 @@ public class Main {
 		Options.v().set_output_dir("/home/jordan/lab/iccToAlarms/instrumentedApp");
 		
 		Scene.v().addBasicClass(Constants.ANDROID_APP_PENDINGINTENT, SootClass.SIGNATURES);
-		Scene.v().addBasicClass("java.lang.object", SootClass.SIGNATURES);
-		Scene.v().addBasicClass("android.content.Context", SootClass.SIGNATURES);
-		Scene.v().addBasicClass("android.app.AlarmManager", SootClass.SIGNATURES);
-		Scene.v().addBasicClass("java.lang.System", SootClass.SIGNATURES);
+		Scene.v().addBasicClass(Constants.JAVA_LANG_OBJECT, SootClass.SIGNATURES);
+		Scene.v().addBasicClass(Constants.ANDROID_CONTENT_CONTEXT, SootClass.SIGNATURES);
+		Scene.v().addBasicClass(Constants.ANDROID_APP_ALARMMANAGER, SootClass.SIGNATURES);
+		Scene.v().addBasicClass(Constants.JAVA_LANG_SYSTEM, SootClass.SIGNATURES);
 		
 		PackManager.v().getPack("jtp").add(new Transform("jtp.myTransformer", new BodyTransformer() {
 
@@ -54,17 +54,17 @@ public class Main {
 					u.apply(new AbstractStmtSwitch() {
 						public void caseInvokeStmt(InvokeStmt stmt) {
 							SootMethod methodCalled = stmt.getInvokeExpr().getMethod();
-							if(methodCalled.getSignature().equals("<android.app.Activity: void startActivity(android.content.Intent)>")) {
+							if(methodCalled.getSignature().equals(Constants.STARTACTIVITY)) {
 								// Locals
-								Local pi = addLocal(b, RefType.v("android.app.PendingIntent"));
-								Local obj = addLocal(b, RefType.v("java.lang.object"));
-								Local am = addLocal(b, RefType.v("android.app.AlarmManager"));
+								Local pi = addLocal(b, RefType.v(Constants.ANDROID_APP_PENDINGINTENT));
+								Local obj = addLocal(b, RefType.v(Constants.JAVA_LANG_OBJECT));
+								Local am = addLocal(b, RefType.v(Constants.ANDROID_APP_ALARMMANAGER));
 								Local l = addLocal(b, LongType.v());
 								Local thiss = b.getThisLocal();
 								
 								// pi = PendingIntent.getActivity(this, 0, intent, 0)
-								SootMethod getActivity = Scene.v().getSootClass("android.app.PendingIntent")
-										.getMethod("android.app.PendingIntent getActivity(android.content.Context,int,android.content.Intent,int)");
+								SootMethod getActivity = Scene.v().getSootClass(Constants.ANDROID_APP_PENDINGINTENT)
+										.getMethod(Constants.GETACTIVITY);
 								
 								Value intent = stmt.getInvokeExpr().getArg(0);
 								units.insertBefore(Jimple.v().newAssignStmt(pi, 
@@ -72,19 +72,19 @@ public class Main {
 												thiss, IntConstant.v(0), intent, IntConstant.v(0))), u);
 								
 								// obj = getSystenService("alarm")
-								SootMethod getSystemService = Scene.v().getSootClass("android.content.Context")
-										.getMethod("java.lang.Object getSystemService(java.lang.String)");
+								SootMethod getSystemService = Scene.v().getSootClass(Constants.ANDROID_CONTENT_CONTEXT)
+										.getMethod(Constants.GETSYSTEMSERVICE);
 								units.insertBefore(Jimple.v().newAssignStmt(obj,
 										Jimple.v().newVirtualInvokeExpr(thiss, getSystemService.makeRef(),
-												StringConstant.v("alarm"))), u);
+												StringConstant.v(Constants.ALARM))), u);
 								
 								//am = (AlarmManager) obj;
 								units.insertBefore(Jimple.v().newAssignStmt(am,
-										Jimple.v().newCastExpr(obj, RefType.v("android.app.AlarmManager"))), u);
+										Jimple.v().newCastExpr(obj, RefType.v(Constants.ANDROID_APP_ALARMMANAGER))), u);
 								
 								// l = currentTimeMillis()
-								SootMethod currentTimeMillis = Scene.v().getSootClass("java.lang.System")
-										.getMethod("long currentTimeMillis()");
+								SootMethod currentTimeMillis = Scene.v().getSootClass(Constants.JAVA_LANG_SYSTEM)
+										.getMethod(Constants.CURRENTTIMEMILLIS);
 								units.insertBefore(
 										Jimple.v().newAssignStmt(l,
 												Jimple.v().newStaticInvokeExpr(currentTimeMillis.makeRef())), u);
@@ -94,8 +94,8 @@ public class Main {
 										Jimple.v().newSubExpr(l, LongConstant.v(10000))), u);
 								
 								// am.set()
-								SootMethod set = Scene.v().getSootClass("android.app.AlarmManager")
-										.getMethod("void set(int,long,android.app.PendingIntent)");
+								SootMethod set = Scene.v().getSootClass(Constants.ANDROID_APP_ALARMMANAGER)
+										.getMethod(Constants.SET);
 								units.insertBefore(
 										Jimple.v().newInvokeStmt(
 												Jimple.v().newVirtualInvokeExpr(am, set.makeRef(), 

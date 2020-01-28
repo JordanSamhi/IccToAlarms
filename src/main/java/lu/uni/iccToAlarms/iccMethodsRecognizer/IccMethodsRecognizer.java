@@ -1,4 +1,4 @@
-package lu.uni.IccToAlarms.iccMethodsRecognizer;
+package lu.uni.iccToAlarms.iccMethodsRecognizer;
 
 import java.util.List;
 

@@ -1,13 +1,14 @@
-package lu.uni.IccToAlarms;
+package lu.uni.iccToAlarms;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import lu.uni.IccToAlarms.iccMethodsRecognizer.IccMethodsRecognizerHandler;
-import lu.uni.IccToAlarms.iccMethodsRecognizer.StartActivityRecognizer;
-import lu.uni.IccToAlarms.utils.Constants;
+
+import lu.uni.iccToAlarms.iccMethodsRecognizer.IccMethodsRecognizerHandler;
+import lu.uni.iccToAlarms.iccMethodsRecognizer.StartActivityRecognizer;
+import lu.uni.iccToAlarms.utils.Constants;
 import soot.Body;
 import soot.PackManager;
 import soot.PatchingChain;

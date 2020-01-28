@@ -1,4 +1,4 @@
-package lu.uni.IccToAlarms.utils;
+package lu.uni.iccToAlarms.utils;
 
 public class Constants {
 

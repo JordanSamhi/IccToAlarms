@@ -18,6 +18,7 @@ public class Constants {
 	public static final String GETSYSTEMSERVICE = "java.lang.Object getSystemService(java.lang.String)";
 	public static final String CURRENTTIMEMILLIS = "long currentTimeMillis()";
 	public static final String SET = "void set(int,long,android.app.PendingIntent)";
+	public static final String STARTACTIVITY = "<android.app.Activity: void startActivity(android.content.Intent)>";
 	
 	/**
 	 * String Constants

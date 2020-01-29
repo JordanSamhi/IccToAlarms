@@ -20,8 +20,8 @@ import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 
 public class AlarmManagerMethodsFactory {
-
-	public List<Unit> generateGetActivity(Body b, Stmt stmt){
+	
+	private List<Unit> generateGenericBody(Body b, Stmt stmt, String alarmMethodSignature){
 		List<Unit> unitsToAdd = new ArrayList<Unit>();
 		Local pi = this.addLocal(b, RefType.v(Constants.ANDROID_APP_PENDINGINTENT));
 		Local obj = this.addLocal(b, RefType.v(Constants.JAVA_LANG_OBJECT));
@@ -29,10 +29,10 @@ public class AlarmManagerMethodsFactory {
 		Local l = this.addLocal(b, LongType.v());
 		Local thisLocal = b.getThisLocal();
 
-		SootMethodRef getActivity = this.getMethodRef(Constants.ANDROID_APP_PENDINGINTENT, Constants.GETACTIVITY); 
+		SootMethodRef alarmMethod = this.getMethodRef(Constants.ANDROID_APP_PENDINGINTENT, alarmMethodSignature); 
 		Value intent = stmt.getInvokeExpr().getArg(0);
 		unitsToAdd.add(Jimple.v().newAssignStmt(pi,
-				Jimple.v().newStaticInvokeExpr(getActivity, 
+				Jimple.v().newStaticInvokeExpr(alarmMethod, 
 						thisLocal, IntConstant.v(0), intent, IntConstant.v(0))));
 
 		SootMethodRef getSystemService = this.getMethodRef(Constants.ANDROID_CONTENT_CONTEXT, Constants.GETSYSTEMSERVICE);
@@ -59,42 +59,12 @@ public class AlarmManagerMethodsFactory {
 		return unitsToAdd;
 	}
 
+	public List<Unit> generateGetActivity(Body b, Stmt stmt){
+		return this.generateGenericBody(b, stmt, Constants.GETACTIVITY);
+	}
+
 	public List<Unit> generateGetBroadcast(Body b, Stmt stmt){
-		List<Unit> unitsToAdd = new ArrayList<Unit>();
-		Local pi = this.addLocal(b, RefType.v(Constants.ANDROID_APP_PENDINGINTENT));
-		Local obj = this.addLocal(b, RefType.v(Constants.JAVA_LANG_OBJECT));
-		Local am = this.addLocal(b, RefType.v(Constants.ANDROID_APP_ALARMMANAGER));
-		Local l = this.addLocal(b, LongType.v());
-		Local thisLocal = b.getThisLocal();
-
-		SootMethodRef getBroadcast = this.getMethodRef(Constants.ANDROID_APP_PENDINGINTENT, Constants.GETBROADCAST);
-		Value intent = stmt.getInvokeExpr().getArg(0);
-		unitsToAdd.add(Jimple.v().newAssignStmt(pi,
-				Jimple.v().newStaticInvokeExpr(getBroadcast,
-						thisLocal, IntConstant.v(0), intent, IntConstant.v(0))));
-
-		SootMethodRef getSystemService = this.getMethodRef(Constants.ANDROID_CONTENT_CONTEXT, Constants.GETSYSTEMSERVICE);
-		unitsToAdd.add(Jimple.v().newAssignStmt(obj,
-				Jimple.v().newVirtualInvokeExpr(thisLocal, getSystemService,
-						StringConstant.v(Constants.ALARM))));
-
-		unitsToAdd.add(Jimple.v().newAssignStmt(am,
-				Jimple.v().newCastExpr(obj, RefType.v(Constants.ANDROID_APP_ALARMMANAGER))));
-
-		SootMethodRef currentTimeMillis = this.getMethodRef(Constants.JAVA_LANG_SYSTEM, Constants.CURRENTTIMEMILLIS);
-		unitsToAdd.add(
-				Jimple.v().newAssignStmt(l,
-						Jimple.v().newStaticInvokeExpr(currentTimeMillis)));
-
-		unitsToAdd.add(Jimple.v().newAssignStmt(l,
-				Jimple.v().newSubExpr(l, LongConstant.v(10000))));
-
-		SootMethodRef set = this.getMethodRef(Constants.ANDROID_APP_ALARMMANAGER, Constants.SET);
-		unitsToAdd.add(
-				Jimple.v().newInvokeStmt(
-						Jimple.v().newVirtualInvokeExpr(am, set,
-								IntConstant.v(0), l, pi)));
-		return unitsToAdd;
+		return this.generateGenericBody(b, stmt, Constants.GETBROADCAST);
 	}
 	
 	private SootMethodRef getMethodRef(String className, String methodName) {

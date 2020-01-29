@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import lu.uni.iccToAlarms.iccMethodsRecognizer.IccMethodsRecognizerHandler;
 import lu.uni.iccToAlarms.iccMethodsRecognizer.SendBroadcastRecognizer;
 import lu.uni.iccToAlarms.iccMethodsRecognizer.StartActivityRecognizer;
+import lu.uni.iccToAlarms.iccMethodsRecognizer.StartServiceRecognizer;
 import lu.uni.iccToAlarms.utils.Constants;
 import soot.Body;
 import soot.PackManager;
@@ -45,6 +46,7 @@ public class Main {
 												SootMethod methodCalled = stmt.getInvokeExpr().getMethod();
 												IccMethodsRecognizerHandler imrh = new StartActivityRecognizer(null);
 												imrh = new SendBroadcastRecognizer(imrh);
+												imrh = new StartServiceRecognizer(imrh);
 												List<Unit> unitsToAdd = imrh.recognizeIccMethod(b, methodCalled, stmt);
 												if(unitsToAdd != null && !unitsToAdd.isEmpty()) {
 													logger.info(String.format("%-10s: %s", "Icc call", methodCalled.getSubSignature()));

@@ -7,19 +7,19 @@ import soot.Body;
 import soot.Unit;
 import soot.jimple.Stmt;
 
-public class SendBroadcastRecognizer extends IccMethodsRecognizerHandler {
+public class StartServiceRecognizer extends IccMethodsRecognizerHandler {
 
-	public SendBroadcastRecognizer(IccMethodsRecognizerHandler next) {
+	public StartServiceRecognizer(IccMethodsRecognizerHandler next) {
 		super(next);
 	}
 
 	@Override
 	protected String getTypeRecognized() {
-		return Constants.SENDBROADCAST;
+		return Constants.STARTSERVICE;
 	}
 
 	@Override
 	protected List<Unit> generateUnits(Body b, Stmt stmt) {
-		return this.ammf.generateGetBroadcast(b, stmt);
+		return this.ammf.generateGetService(b, stmt);
 	}
 }

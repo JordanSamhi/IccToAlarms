@@ -66,6 +66,10 @@ public class AlarmManagerMethodsFactory {
 	public List<Unit> generateGetBroadcast(Body b, Stmt stmt){
 		return this.generateGenericBody(b, stmt, Constants.GETBROADCAST);
 	}
+
+	public List<Unit> generateGetService(Body b, Stmt stmt){
+		return this.generateGenericBody(b, stmt, Constants.GETSERVICE);
+	}
 	
 	private SootMethodRef getMethodRef(String className, String methodName) {
 		return Scene.v().getSootClass(className).getMethod(methodName).makeRef();

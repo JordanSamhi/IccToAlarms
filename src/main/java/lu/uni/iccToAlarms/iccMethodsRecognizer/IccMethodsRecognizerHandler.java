@@ -7,6 +7,7 @@ import soot.Body;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.InvokeStmt;
+import soot.jimple.Stmt;
 
 public abstract class IccMethodsRecognizerHandler implements IccMethodsRecognizer {
 	
@@ -30,7 +31,15 @@ public abstract class IccMethodsRecognizerHandler implements IccMethodsRecognize
 		}
 	}
 	
-	protected abstract List<Unit> recognize(Body b, SootMethod sm, InvokeStmt stmt);
+	private List<Unit> recognize(Body b, SootMethod sm, InvokeStmt stmt){
+		if(sm.getSignature().equals(this.getTypeRecognized())) {
+			return this.generateUnits(b, stmt);
+		}
+		return null;
+	}
+	
+	protected abstract String getTypeRecognized();
+	protected abstract List<Unit> generateUnits(Body b, Stmt stmt);
 
 	// TODO sendOrderedBroadcast(Intent, String)
 	// TODO LocalBroadcastManager.sendBroadcast

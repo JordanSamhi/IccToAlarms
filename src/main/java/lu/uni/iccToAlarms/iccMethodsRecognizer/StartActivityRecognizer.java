@@ -4,9 +4,8 @@ import java.util.List;
 
 import lu.uni.iccToAlarms.utils.Constants;
 import soot.Body;
-import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.InvokeStmt;
+import soot.jimple.Stmt;
 
 public class StartActivityRecognizer extends IccMethodsRecognizerHandler {
 
@@ -15,11 +14,12 @@ public class StartActivityRecognizer extends IccMethodsRecognizerHandler {
 	}
 
 	@Override
-	protected List<Unit> recognize(Body b, SootMethod sm, InvokeStmt stmt) {
-		List<Unit> unitsToAdd = null;
-		if(sm.getSignature().equals(Constants.STARTACTIVITY)) {
-			unitsToAdd = this.ammf.generateGetBroadcast(b, stmt);
-		}
-		return unitsToAdd;
+	protected String getTypeRecognized() {
+		return Constants.STARTACTIVITY;
+	}
+
+	@Override
+	protected List<Unit> generateUnits(Body b, Stmt stmt) {
+		return this.ammf.generateGetActivity(b, stmt);
 	}
 }

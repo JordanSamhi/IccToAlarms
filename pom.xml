@@ -56,7 +56,7 @@
 					<archive>
 						<manifest>
 							<mainClass>
-								lu.uni.IccToAlarms.Main
+								lu.uni.iccToAlarms.Main
 							</mainClass>
 						</manifest>
 					</archive>

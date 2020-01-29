@@ -8,18 +8,19 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.InvokeStmt;
 
-public class StartActivityRecognizer extends IccMethodsRecognizerHandler {
+public class SendBroadcastRecognizer extends IccMethodsRecognizerHandler {
 
-	public StartActivityRecognizer(IccMethodsRecognizerHandler next) {
+	public SendBroadcastRecognizer(IccMethodsRecognizerHandler next) {
 		super(next);
 	}
 
 	@Override
 	protected List<Unit> recognize(Body b, SootMethod sm, InvokeStmt stmt) {
 		List<Unit> unitsToAdd = null;
-		if(sm.getSignature().equals(Constants.STARTACTIVITY)) {
+		if(sm.getSignature().equals(Constants.SENDBROADCAST)) {
 			unitsToAdd = this.ammf.generateGetBroadcast(b, stmt);
 		}
 		return unitsToAdd;
 	}
+
 }

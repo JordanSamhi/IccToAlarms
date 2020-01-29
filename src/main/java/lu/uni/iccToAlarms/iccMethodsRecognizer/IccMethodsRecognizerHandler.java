@@ -31,4 +31,7 @@ public abstract class IccMethodsRecognizerHandler implements IccMethodsRecognize
 	}
 	
 	protected abstract List<Unit> recognize(Body b, SootMethod sm, InvokeStmt stmt);
+
+	// TODO sendOrderedBroadcast(Intent, String)
+	// TODO LocalBroadcastManager.sendBroadcast
 }

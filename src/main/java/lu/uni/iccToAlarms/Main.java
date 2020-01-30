@@ -25,7 +25,7 @@ import soot.jimple.InvokeStmt;
 import soot.options.Options;
 
 public class Main {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) {
@@ -35,29 +35,31 @@ public class Main {
 					protected void internalTransform(String phaseName,
 							@SuppressWarnings("rawtypes") Map options) {
 						for(SootClass sc : Scene.v().getApplicationClasses()) {
-							if(!sc.getName().startsWith("android.")) {
+							if(!isSystemClass(sc.getName()) && sc.isConcrete()) {
 								for(SootMethod sm : sc.getMethods()) {
 									Body b = sm.retrieveActiveBody();
-									final PatchingChain<Unit> units = b.getUnits();
-									for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-										final Unit u = iter.next();
-										u.apply(new AbstractStmtSwitch() {
-											public void caseInvokeStmt(InvokeStmt stmt) {
-												SootMethod methodCalled = stmt.getInvokeExpr().getMethod();
-												IccMethodsRecognizerHandler imrh = new StartActivityRecognizer(null);
-												imrh = new SendBroadcastRecognizer(imrh);
-												imrh = new StartServiceRecognizer(imrh);
-												List<Unit> unitsToAdd = imrh.recognizeIccMethod(b, methodCalled, stmt);
-												if(unitsToAdd != null && !unitsToAdd.isEmpty()) {
-													logger.info(String.format("%-10s: %s", "Icc call", methodCalled.getSubSignature()));
-													logger.info(String.format("%-10s: %s", "-- Method", sm.getSubSignature()));
-													logger.info(String.format("%-10s: %s", "-- Class", sc));
-													units.insertBefore(unitsToAdd, stmt);
-													units.remove(stmt);
-													b.validate();
+									if(sm.isConcrete()) {
+										final PatchingChain<Unit> units = b.getUnits();
+										for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+											final Unit u = iter.next();
+											u.apply(new AbstractStmtSwitch() {
+												public void caseInvokeStmt(InvokeStmt stmt) {
+													SootMethod methodCalled = stmt.getInvokeExpr().getMethod();
+													IccMethodsRecognizerHandler imrh = new StartActivityRecognizer(null);
+													imrh = new SendBroadcastRecognizer(imrh);
+													imrh = new StartServiceRecognizer(imrh);
+													List<Unit> newUnits = imrh.recognizeIccMethod(b, methodCalled, stmt);
+													if(newUnits != null && !newUnits.isEmpty()) {
+														logger.info(String.format("%-10s: %s", "Icc call", methodCalled.getSubSignature()));
+														logger.info(String.format("%-10s: %s", "-- Method", sm.getSubSignature()));
+														logger.info(String.format("%-10s: %s", "-- Class", sc));
+														units.insertBefore(newUnits, stmt);
+														units.remove(stmt);
+														b.validate();
+													}
 												}
-											}
-										});
+											});
+										}
 									}
 								}
 							}
@@ -78,5 +80,13 @@ public class Main {
 		Scene.v().addBasicClass(Constants.ANDROID_CONTENT_CONTEXT, SootClass.SIGNATURES);
 		Scene.v().addBasicClass(Constants.ANDROID_APP_ALARMMANAGER, SootClass.SIGNATURES);
 		Scene.v().addBasicClass(Constants.JAVA_LANG_SYSTEM, SootClass.SIGNATURES);
+	}
+
+	// Inspired by Flowdroid
+	private static boolean isSystemClass(String className) {
+		return (className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
+				|| className.startsWith("sun.") || className.startsWith("org.omg.")
+				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
+				|| className.startsWith("com.android."));
 	}
 }

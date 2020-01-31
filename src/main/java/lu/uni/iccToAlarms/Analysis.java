@@ -78,6 +78,7 @@ public class Analysis {
 					}
 				}));
 		PackManager.v().runPacks();
+		PackManager.v().writeOutput();
 	}
 
 	private void initializeSoot() {
@@ -91,6 +92,8 @@ public class Analysis {
 		apps.add(this.options.getApk());
 		Options.v().set_process_dir(apps);
 		Options.v().set_output_dir(this.options.getOutput());
+		Options.v().set_force_overwrite(true);
+		
 
 		Scene.v().addBasicClass(Constants.ANDROID_APP_PENDINGINTENT, SootClass.SIGNATURES);
 		Scene.v().addBasicClass(Constants.JAVA_LANG_OBJECT, SootClass.SIGNATURES);

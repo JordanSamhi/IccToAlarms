@@ -28,4 +28,5 @@ public class Constants {
 	 * String Constants
 	 */
 	public static final String ALARM = "alarm";
+	public static final String REF_TMP = "ref_tmp";
 }

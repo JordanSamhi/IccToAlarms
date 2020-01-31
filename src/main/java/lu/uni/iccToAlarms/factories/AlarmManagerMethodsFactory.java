@@ -76,7 +76,7 @@ public class AlarmManagerMethodsFactory {
 	}
 	
 	private Local addLocal(Body b, Type t) {
-		Local l = Jimple.v().newLocal("l", t);
+		Local l = Jimple.v().newLocal(Constants.REF_TMP, t);
 		b.getLocals().add(l);
 		return l;
 	}

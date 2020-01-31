@@ -42,7 +42,7 @@
         </filter>
     </appender>
     <logger name="lu.uni.iccToAlarms" additivity="false">
-        <level value="DEBUG"/>
+        <level value="INFO"/>
         <appender-ref ref="STDOUT_DEBUG"/>
         <appender-ref ref="STDOUT_INFO"/>
         <appender-ref ref="STDOUT_WARN"/>

@@ -1,6 +1,7 @@
 package lu.uni.iccToAlarms;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,13 @@ public class Analysis {
 	}
 
 	public void run() {
+		System.out.println(String.format("IccToAlarms started on %s\n", new Date()));
 		initializeSoot();
 		PackManager.v().getPack("wjtp").add(
 				new Transform("wjtp.myTransform", new SceneTransformer() {
 					protected void internalTransform(String phaseName,
 							@SuppressWarnings("rawtypes") Map options) {
+						final boolean iccFound = true;
 						for(SootClass sc : Scene.v().getApplicationClasses()) {
 							if(!isSystemClass(sc.getName()) && sc.isConcrete()) {
 								for(SootMethod sm : sc.getMethods()) {
@@ -60,10 +63,16 @@ public class Analysis {
 													imrh = new StartServiceRecognizer(imrh);
 													List<Unit> newUnits = imrh.recognizeIccMethod(b, methodCalled, stmt);
 													if(newUnits != null && !newUnits.isEmpty()) {
-														logger.info(String.format("%-16s: %s", "Icc call found", methodCalled.getSubSignature()));
-														logger.info(String.format("%-16s: %s", "-- Class", sc));
-														logger.info(String.format("%-16s: %s", "-- Method", sm.getSubSignature()));
-														logger.info("Successfully transformed !");
+														System.out.println(String.format("%-16s: %s", "Icc call found", methodCalled.getSubSignature()));
+														System.out.println(String.format("%-16s: %s", "-- Class", sc));
+														System.out.println(String.format("%-16s: %s", "-- Method", sm.getSubSignature()));
+														if(logger.isDebugEnabled()) {
+															logger.debug(String.format("New units added:"));
+															for(Unit newUnit : newUnits) {
+																logger.debug(String.format("-- %s", newUnit));
+															}
+														}
+														System.out.println("Successfully transformed !");
 														units.insertBefore(newUnits, stmt);
 														units.remove(stmt);
 														b.validate();
@@ -79,6 +88,7 @@ public class Analysis {
 				}));
 		PackManager.v().runPacks();
 		PackManager.v().writeOutput();
+		System.out.println("End of analysis.");
 	}
 
 	private void initializeSoot() {

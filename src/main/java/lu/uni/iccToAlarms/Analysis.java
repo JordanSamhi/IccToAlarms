@@ -34,19 +34,23 @@ public class Analysis {
 	private CommandLineOptions options;
 
 	private Logger logger = LoggerFactory.getLogger(Main.class);
+	private boolean iccFound;
+	private StringBuilder outputResults;
 
 	public Analysis(String[] args) {
 		this.options = new CommandLineOptions(args);
+		this.iccFound = false;
+		outputResults = new StringBuilder();
 	}
 
 	public void run() {
+		// TODO test if file exists
 		System.out.println(String.format("IccToAlarms started on %s\n", new Date()));
 		initializeSoot();
 		PackManager.v().getPack("wjtp").add(
 				new Transform("wjtp.myTransform", new SceneTransformer() {
 					protected void internalTransform(String phaseName,
 							@SuppressWarnings("rawtypes") Map options) {
-						final boolean iccFound = true;
 						for(SootClass sc : Scene.v().getApplicationClasses()) {
 							if(!isSystemClass(sc.getName()) && sc.isConcrete()) {
 								for(SootMethod sm : sc.getMethods()) {
@@ -63,16 +67,18 @@ public class Analysis {
 													imrh = new StartServiceRecognizer(imrh);
 													List<Unit> newUnits = imrh.recognizeIccMethod(b, methodCalled, stmt);
 													if(newUnits != null && !newUnits.isEmpty()) {
-														System.out.println(String.format("%-16s: %s", "Icc call found", methodCalled.getSubSignature()));
-														System.out.println(String.format("%-16s: %s", "-- Class", sc));
-														System.out.println(String.format("%-16s: %s", "-- Method", sm.getSubSignature()));
+														iccFound = true;
+														outputResults.append(String.format("%-16s: %s", "- Icc call", methodCalled.getSubSignature()));
+														outputResults.append(String.format("\n%-16s: %s", "-- Statement", stmt));
+														outputResults.append(String.format("\n%-16s: %s", "-- Class", sc));
+														outputResults.append(String.format("\n%-16s: %s", "-- Method", sm.getSubSignature()));
 														if(logger.isDebugEnabled()) {
 															logger.debug(String.format("New units added:"));
 															for(Unit newUnit : newUnits) {
 																logger.debug(String.format("-- %s", newUnit));
 															}
 														}
-														System.out.println("Successfully transformed !");
+														outputResults.append("\n");
 														units.insertBefore(newUnits, stmt);
 														units.remove(stmt);
 														b.validate();
@@ -87,8 +93,15 @@ public class Analysis {
 					}
 				}));
 		PackManager.v().runPacks();
-		PackManager.v().writeOutput();
-		System.out.println("End of analysis.");
+		if(this.iccFound) {
+			System.out.println("ICC method calls have been found and transformed:\n");
+			System.out.println(outputResults);
+			PackManager.v().writeOutput();
+			System.out.println(String.format("New APK generated in: %s", this.options.getOutput()));
+		}else {
+			System.out.println("No Inter-Component Communication method handled.");
+			System.out.println("No new APK generated.");
+		}
 	}
 
 	private void initializeSoot() {

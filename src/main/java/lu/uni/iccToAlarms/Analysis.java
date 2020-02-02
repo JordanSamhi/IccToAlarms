@@ -44,7 +44,6 @@ public class Analysis {
 	}
 
 	public void run() {
-		// TODO test if file exists
 		System.out.println(String.format("IccToAlarms started on %s\n", new Date()));
 		initializeSoot();
 		PackManager.v().getPack("wjtp").add(

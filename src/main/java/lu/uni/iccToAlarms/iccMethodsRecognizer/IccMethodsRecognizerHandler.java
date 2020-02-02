@@ -40,7 +40,4 @@ public abstract class IccMethodsRecognizerHandler implements IccMethodsRecognize
 	
 	protected abstract String getTypeRecognized();
 	protected abstract List<Unit> generateUnits(Body b, Stmt stmt);
-
-	// TODO sendOrderedBroadcast(Intent, String)
-	// TODO LocalBroadcastManager.sendBroadcast
 }

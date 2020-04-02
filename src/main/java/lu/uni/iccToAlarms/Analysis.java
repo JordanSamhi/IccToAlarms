@@ -33,9 +33,10 @@ public class Analysis {
 
 	private CommandLineOptions options;
 
-	private Logger logger = LoggerFactory.getLogger(Main.class);
 	private boolean iccFound;
 	private StringBuilder outputResults;
+
+	private Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public Analysis(String[] args) {
 		this.options = new CommandLineOptions(args);
